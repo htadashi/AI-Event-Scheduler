@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "GPT3 Event Scheduler",
+  "version": "1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "description": "GPT3 Event Scheduler allows you to quickly and easily create Google calendar events by simply selecting the details and clicking on a button.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "contextMenus",
+    "http://*/",
+    "https://*/"
+  ],
+  "options_page": "options.html",
+  "browser_action": {
+    "default_title": "GPT3 Event Scheduler"
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "64": "icons/64.png"
+  }
+}
