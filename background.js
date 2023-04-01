@@ -16,8 +16,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             } else {
                 const apiKey = result.apiKey;
                 const endpoint = "https://api.openai.com/v1/completions";
+
+                const now = new Date();
+                const localTime = now.toLocaleTimeString();
+                const localDate = now.toLocaleDateString();
+
                 const model = "text-davinci-003";
-                const prompt = `Create a link to add an event to Google Calendar based on this text: ${info.selectionText}`;
+                const prompt = `"""
+                Create a Google Calendar link to add an event to Google Calendar based on this text: ${info.selectionText}.
+                Take into account that my current local time is ${localTime}, and today is ${localDate}. 
+                """`
                 const max_tokens = 256;
 
                 fetch(endpoint, {
