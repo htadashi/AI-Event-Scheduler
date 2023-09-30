@@ -18,17 +18,19 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 chrome.runtime.openOptionsPage();
             } else {
                 const apiKey = result.apiKey;
-                const endpoint = "https://api.openai.com/v1/completions";
+                const endpoint = "https://api.openai.com/v1/chat/completions";
 
                 const now = new Date();
                 const localTime = now.toLocaleTimeString();
                 const localDate = now.toLocaleDateString();
 
-                const model = "text-davinci-003";
+                const model = "gpt-3.5-turbo";
                 const prompt = `"""
                 Create a Google Calendar link to add an event to Google Calendar based on this text: ${info.selectionText}.
                 Take into account that my current local time is ${localTime}, and today is ${localDate}. 
+                The final output should solely consist of the Google Calendar link.
                 """`
+                const message = {role: "user", content: prompt};
                 const max_tokens = 256;
 
                 fetch(endpoint, {
@@ -39,13 +41,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                         },
                         body: JSON.stringify({
                             model: model,
-                            prompt: prompt,
+                            messages: [message],
                             max_tokens: max_tokens
                         })
                     })
                     .then(response => response.json())
                     .then(data => {
-                        const calendarURL = data.choices[0].text;
+                        const calendarURL = data.choices[0].message.content;
                         chrome.scripting.insertCSS({
                             target: { tabId: tab.id },
                             css: 'body { cursor: default; }'
