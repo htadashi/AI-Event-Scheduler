@@ -28,7 +28,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 const prompt = `"""
                 Create a Google Calendar link to add an event to Google Calendar based on this text: ${info.selectionText}.
                 Take into account that my current local time is ${localTime}, and today is ${localDate}. 
-                The final output should solely consist of the Google Calendar link.
+                The final output should solely consist of the Google Calendar link. Never include any text other than the calendar link in your response.
                 """`
                 const message = {role: "user", content: prompt};
                 const max_tokens = 256;
