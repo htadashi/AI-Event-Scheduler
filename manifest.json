@@ -6,7 +6,7 @@
     "service_worker" : "service_worker.js",
     "type" : "module"
   },
-  "description": "GPT3 Event Scheduler allows you to quickly and easily create Google calendar events by simply selecting the details and clicking on a button.",
+  "description": "GPT3 Event Scheduler: quickly create Google calendar events by selecting details and clicking a button.",
   "permissions": [
     "storage",
     "tabs",
