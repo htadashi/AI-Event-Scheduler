@@ -97,6 +97,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             url: calendarURL
                         });
                     })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                        chrome.scripting.insertCSS({
+                            target: { tabId: tab.id },
+                            css: 'body { cursor: default; }'
+                        });
+                        alert('An error occurred while creating the event. Please try again later.');
+                    });
             }
         });
     }
