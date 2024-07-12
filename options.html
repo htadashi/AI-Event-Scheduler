@@ -10,9 +10,15 @@
     To use GPT3 Event Scheduler, you will need an OpenAI API key. Follow the instructions <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key">here</a> to generate your key. Then, enter it in the input box below.
 
     <br><br>
-    <form id="api-key-form">
+    <form id="configuration-form">
       <label for="api-key-input"><b>OpenAI API Key:</b></label><br>
       <input type="text" id="api-key-input" name="api-key">
+      <br><br>
+      <label for="model-select"><b>Choose default AI Model:</b></label><br>
+      <select id="model-select" name="model">
+        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+        <option value="gpt-4o">GPT-4o</option>
+      </select>      
       <button type="submit">Save</button>
     </form>     
 

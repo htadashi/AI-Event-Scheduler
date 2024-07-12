@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId == "create-gcal-url") {
-        chrome.storage.sync.get(["apiKey"], function (result) {
+        chrome.storage.sync.get(["apiKey", "defaultModel"], function (result) {
             chrome.scripting.insertCSS({
                 target: { tabId: tab.id },
                 css: 'body { cursor: wait; }'
@@ -19,7 +19,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             } else {
                 const apiKey = result.apiKey;
                 const endpoint = "https://api.openai.com/v1/chat/completions";
-                const model = "gpt-3.5-turbo";
+                const model = result.defaultModel;
                 const prompt = `Create an event for ${info.selectionText}`;
                 const message = { role: "user", content: prompt };
                 const tools = [
