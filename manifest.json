@@ -3,9 +3,10 @@
   "name": "GPT3 Event Scheduler",
   "version": "1.1",
   "background": {
-    "service_worker" : "service_worker.js",
-    "type" : "module"
+    "service_worker": "service_worker.js",
+    "type": "module"
   },
+  "minimum_chrome_version": "92",
   "description": "GPT3 Event Scheduler: quickly create Google calendar events by selecting details and clicking a button.",
   "permissions": [
     "storage",

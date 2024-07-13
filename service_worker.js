@@ -1,3 +1,4 @@
+import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "create-gcal-url",
@@ -18,63 +19,22 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 chrome.runtime.openOptionsPage();
             } else {
                 const apiKey = result.apiKey;
-                const endpoint = "https://api.openai.com/v1/chat/completions";
-                const model = result.defaultModel;
-                const prompt = `Create an event for ${info.selectionText}`;
-                const message = { role: "user", content: prompt };
-                const tools = [
-                    {
-                        "type": "function",
-                        "function": {
-                            "name": "get_event_information",
-                            "description": "Get the event information from the input text.",
-                            "parameters": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {
-                                        "type": "string",
-                                        "description": "The title of the event."
-                                    },
-                                    "start_date": {
-                                        "type": "string",
-                                        "description": "The start date of the event in the format YYYYMMDDTHHMMSSZ. If it is an all-day event, use the format YYYYMMDD."
-                                    },
-                                    "end_date": {
-                                        "type": "string",
-                                        "description": "The end date of the event in the format YYYYMMDDTHHMMSSZ."
-                                    },
-                                    "location": {
-                                        "type": "string",
-                                        "description": "The location of the event."
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "The description of the event. Maximum number of characters is 800."
-                                    }
-                                },
-                                "required": ["title", "start_date", "location", "description"]
-                            }
-                        }
-                    }
-                ];
-                const tool_choice = { "type": "function", "function": { "name": "get_event_information" } };
+                const selectedText = info.selectionText;
+                let model = result.defaultModel;
+                if (model === undefined) model = "gpt-3.5-turbo";
 
-                fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: model,
-                        messages: [message],
-                        tools: tools,
-                        tool_choice: tool_choice
-                    })
-                })
+                let request;
+                if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
+                    request = buildRequestOpenAI(selectedText, apiKey, model);
+                }
+
+                fetch(request.endpoint, request.options)
                     .then(response => response.json())
                     .then(data => {
-                        const event = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
+                        let event;
+                        if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
+                            event = parseResponseOpenAI(data);
+                        }
 
                         // Format the dates
                         const startDate = event.start_date;
