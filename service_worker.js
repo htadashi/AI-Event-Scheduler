@@ -1,4 +1,5 @@
 import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
+import { buildRequestGemini, parseResponseGemini } from "./modules/gemini.js";
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "create-gcal-url",
@@ -26,14 +27,19 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 let request;
                 if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
                     request = buildRequestOpenAI(selectedText, apiKey, model);
+                } else if (model === "gemini") {
+                    request = buildRequestGemini(selectedText, apiKey);
                 }
 
                 fetch(request.endpoint, request.options)
                     .then(response => response.json())
                     .then(data => {
                         let event;
+                        console.log(data);
                         if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
                             event = parseResponseOpenAI(data);
+                        } else if (model === "gemini") {
+                            event = parseResponseGemini(data);
                         }
 
                         // Format the dates

@@ -2,23 +2,26 @@
 <meta charset="utf-8" />
 <html>
   <head>
-    <title>GPT3 Event Scheduler Options</title>
+    <title>AI Event Scheduler Options</title>
   </head>
   <body>
-    <h1>📅 GPT3 Event Scheduler Options</h1>
+    <h1>📅 AI Event Scheduler Options</h1>
 
-    To use GPT3 Event Scheduler, you will need an OpenAI API key. Follow the instructions <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key">here</a> to generate your key. Then, enter it in the input box below.
+    To use AI Event Scheduler, you will need an API key for the selected model. 
+    For OpenAI models, see <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key">these instructions</a>. 
+    For Gemini, see <a href="https://ai.google.dev/gemini-api/docs/api-key">these instructions</a>.        
 
     <br><br>
     <form id="configuration-form">
-      <label for="api-key-input"><b>OpenAI API Key:</b></label><br>
-      <input type="text" id="api-key-input" name="api-key">
-      <br><br>
       <label for="model-select"><b>Choose default AI Model:</b></label><br>
       <select id="model-select" name="model">
         <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
         <option value="gpt-4o">GPT-4o</option>
+        <option value="gemini">Gemini 1.0</option>
       </select>      
+      <br><br>
+      <label for="api-key-input"><b>API Key:</b></label><br>
+      <input type="text" id="api-key-input" name="api-key">
       <button type="submit">Save</button>
     </form>     
 

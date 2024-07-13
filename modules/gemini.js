@@ -1,11 +1,15 @@
-export function buildRequestOpenAI(selectionText, apiKey, model) {
-    const endpoint = "https://api.openai.com/v1/chat/completions";
+export function buildRequestGemini(selectionText, apiKey) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
     const prompt = `Create an event for ${selectionText}`;
-    const message = { role: "user", content: prompt };
+    const contents = {
+        role: "user",
+        parts: {
+            text: prompt
+        }
+    };
     const tools = [
         {
-            "type": "function",
-            "function": {
+            "function_declarations": {
                 "name": "get_event_information",
                 "description": "Get the event information from the input text.",
                 "parameters": {
@@ -37,13 +41,17 @@ export function buildRequestOpenAI(selectionText, apiKey, model) {
             }
         }
     ];
-    const tool_choice = { "type": "function", "function": { "name": "get_event_information" } };
+    const tool_config = {
+        "function_calling_config": {
+            "mode": "ANY",
+            "allowed_function_names": ["get_event_information"]
+        }
+    };
 
     const request_body = JSON.stringify({
-        model: model,
-        messages: [message],
+        contents: contents,
         tools: tools,
-        tool_choice: tool_choice
+        tool_config: tool_config
     });
     const request = {
         endpoint: endpoint,
@@ -51,7 +59,6 @@ export function buildRequestOpenAI(selectionText, apiKey, model) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
             },
             body: request_body
         }
@@ -60,7 +67,7 @@ export function buildRequestOpenAI(selectionText, apiKey, model) {
     return request;
 }
 
-export function parseResponseOpenAI(data) {
-    const event = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
+export function parseResponseGemini(data) {
+    const event = data.candidates[0].content.parts[0].functionCall.args;
     return event;
 }
