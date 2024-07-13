@@ -1,30 +1,53 @@
 <!DOCTYPE html>
-<meta charset="utf-8" />
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Event Scheduler Options</title>
-  </head>
-  <body>
-    <h1>📅 AI Event Scheduler Options</h1>
+    <link rel="stylesheet" href="style/materialize.min.css">
+</head>
+<body>
+    <nav>
+      <div class="nav-wrapper black">
+          <a href="#" class="brand-logo center">📅 AI Event Scheduler Options</a>
+      </div>
+  </nav>  
+    <div class="container">
 
-    To use AI Event Scheduler, you will need an API key for the selected model. 
-    For OpenAI models, see <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key">these instructions</a>. 
-    For Gemini, see <a href="https://ai.google.dev/gemini-api/docs/api-key">these instructions</a>.        
+        <div class="row">
+            <div class="col s12"><br>
+                <p>To use AI Event Scheduler, you will need an API key for the selected model.</p>
+                <p>For obtaining the API key for OpenAI models, see <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key" target="_blank">these instructions</a>.</p>
+                <p>For obtaining the API key for Gemini, see <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank">these instructions</a>.</p>
+            </div>
+        </div>
 
-    <br><br>
-    <form id="configuration-form">
-      <label for="model-select"><b>Choose default AI Model:</b></label><br>
-      <select id="model-select" name="model">
-        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-        <option value="gpt-4o">GPT-4o</option>
-        <option value="gemini">Gemini 1.0</option>
-      </select>      
-      <br><br>
-      <label for="api-key-input"><b>API Key:</b></label><br>
-      <input type="text" id="api-key-input" name="api-key">
-      <button type="submit">Save</button>
-    </form>     
+        <form id="configuration-form">
+            <div class="row">
+                <div class="blue-select input-field col s12">
+                    <select id="model-select">
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gemini">Gemini 1.0</option>
+                    </select>
+                    <label>Choose default AI Model</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input placeholder="" id="api-key-input" type="text" class="validate">
+                    <label for="api-key-input">API Key</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 center-align">
+                    <button class="btn waves-effect waves-light black" type="submit">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-  <script src="options.js" type="module"></script>
-  </body>
+    <script src="style/materialize.min.js"></script>
+    <script src="options.js" type="module"></script>
+</body>
 </html>
