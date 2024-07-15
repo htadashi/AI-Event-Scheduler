@@ -2,6 +2,7 @@ import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
 import { buildRequestGemini, parseResponseGemini } from "./modules/gemini.js";
 import { GET_EVENT_PARAMETERS } from "./modules/prompts.js";
 
+import { isAllDayEvent } from "./modules/util.js";
 chrome.action.onClicked.addListener(() => {
     chrome.runtime.openOptionsPage();
 });
@@ -62,7 +63,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
                         // Format the dates
                         const startDate = event.start_date;
-                        const endDate = event.end_date;
+                        // For untimed events the end date is exclusive, so the end date should be the next day.
+                        let endDate;
+                        if (isAllDayEvent(event.end_date)) {
+                            endDate = new Date(event.end_date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+                            endDate.setDate(endDate.getDate() + 1);
+                            event.end_date = endDate.toISOString().split('T')[0].replace(/-/g, '');
+                        }
+                        endDate = event.end_date;
 
                         // URL encode the event details
                         const title = encodeURIComponent(event.title);
