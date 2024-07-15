@@ -1,5 +1,10 @@
 import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
 import { buildRequestGemini, parseResponseGemini } from "./modules/gemini.js";
+
+chrome.action.onClicked.addListener(() => {
+    chrome.runtime.openOptionsPage();
+});
+
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "create-gcal-url",
