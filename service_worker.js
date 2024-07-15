@@ -1,5 +1,6 @@
 import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
 import { buildRequestGemini, parseResponseGemini } from "./modules/gemini.js";
+import { GET_EVENT_PARAMETERS } from "./modules/prompts.js";
 
 chrome.action.onClicked.addListener(() => {
     chrome.runtime.openOptionsPage();
@@ -37,9 +38,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
                 let request;
                 if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
-                    request = buildRequestOpenAI(selectedText, apiKey, model);
+                    request = buildRequestOpenAI(selectedText, apiKey, model, GET_EVENT_PARAMETERS);
                 } else if (model === "gemini") {
-                    request = buildRequestGemini(selectedText, apiKey);
+                    request = buildRequestGemini(selectedText, apiKey, GET_EVENT_PARAMETERS);
                 }
 
                 fetch(request.endpoint, request.options)

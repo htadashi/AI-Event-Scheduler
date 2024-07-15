@@ -1,4 +1,4 @@
-export function buildRequestGemini(selectionText, apiKey) {
+export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
     const prompt = `Create an event for ${selectionText}`;
     const contents = {
@@ -14,28 +14,7 @@ export function buildRequestGemini(selectionText, apiKey) {
                 "description": "Get the event information from the input text.",
                 "parameters": {
                     "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "description": "The title of the event."
-                        },
-                        "start_date": {
-                            "type": "string",
-                            "description": "The start date of the event in the format YYYYMMDDTHHMMSSZ. If it is an all-day event, use the format YYYYMMDD."
-                        },
-                        "end_date": {
-                            "type": "string",
-                            "description": "The end date of the event in the format YYYYMMDDTHHMMSSZ."
-                        },
-                        "location": {
-                            "type": "string",
-                            "description": "The location of the event."
-                        },
-                        "description": {
-                            "type": "string",
-                            "description": "The description of the event. Maximum number of characters is 800."
-                        }
-                    },
+                    "properties": GET_EVENT_PARAMETERS,
                     "required": ["title", "start_date", "location", "description"]
                 }
             }

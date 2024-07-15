@@ -1,4 +1,4 @@
-export function buildRequestOpenAI(selectionText, apiKey, model) {
+export function buildRequestOpenAI(selectionText, apiKey, model, GET_EVENT_PARAMETERS) {
     const endpoint = "https://api.openai.com/v1/chat/completions";
     const prompt = `Create an event for ${selectionText}`;
     const message = { role: "user", content: prompt };
@@ -10,28 +10,7 @@ export function buildRequestOpenAI(selectionText, apiKey, model) {
                 "description": "Get the event information from the input text.",
                 "parameters": {
                     "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string",
-                            "description": "The title of the event."
-                        },
-                        "start_date": {
-                            "type": "string",
-                            "description": "The start date of the event in the format YYYYMMDDTHHMMSSZ. If it is an all-day event, use the format YYYYMMDD."
-                        },
-                        "end_date": {
-                            "type": "string",
-                            "description": "The end date of the event in the format YYYYMMDDTHHMMSSZ."
-                        },
-                        "location": {
-                            "type": "string",
-                            "description": "The location of the event."
-                        },
-                        "description": {
-                            "type": "string",
-                            "description": "The description of the event. Maximum number of characters is 800."
-                        }
-                    },
+                    "properties": GET_EVENT_PARAMETERS,
                     "required": ["title", "start_date", "location", "description"]
                 }
             }
