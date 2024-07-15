@@ -45,7 +45,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 fetch(request.endpoint, request.options)
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
+
                         if ((data.error?.type === "invalid_request_error") ||
                             (data.error?.details?.[0]?.reason === 'API_KEY_INVALID') ||
                             (data.error?.code === 403)) {
