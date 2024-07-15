@@ -9,15 +9,12 @@
   "minimum_chrome_version": "92",
   "description": "AI Event Scheduler: quickly create Google calendar events by selecting details and clicking a button.",
   "permissions": [
+    "activeTab",
     "storage",
     "tabs",
     "contextMenus",
     "scripting",
     "notifications"
-  ],
-  "host_permissions": [
-    "http://*/",
-    "https://*/"
   ],
   "options_page": "options.html",
   "action": {
