@@ -10,6 +10,13 @@ document.getElementById("configuration-form").addEventListener("submit", functio
     chrome.storage.sync.set({
         apiKey: apiKey,
         defaultModel: defaultModel
-        //}, () => { alert("💾 Saved") });
-    }, () => { alert(`Model: ${defaultModel}`); });
+    }, () => {
+        chrome.notifications.create({
+            type: 'basic',
+            iconUrl: '/icons/64.png',
+            title: 'AI Event Scheduler',
+            message: `💾 Saved. Current model: ${defaultModel}`,
+            priority: 1
+        });
+    });
 });
