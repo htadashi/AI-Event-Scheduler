@@ -21,7 +21,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 css: 'body { cursor: wait; }'
             });
             if (result.apiKey === undefined) {
-                alert("API key is not set. Please set it in the extension options.");
+                chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: '/icons/64.png',
+                    title: 'AI Event Scheduler',
+                    message: "API key is not set. Please set it in the extension options..",
+                    priority: 1
+                });
                 chrome.runtime.openOptionsPage();
             } else {
                 const apiKey = result.apiKey;
@@ -39,8 +45,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 fetch(request.endpoint, request.options)
                     .then(response => response.json())
                     .then(data => {
-                        let event;
                         console.log(data);
+                        if ((data.error?.type === "invalid_request_error") ||
+                            (data.error?.details?.[0]?.reason === 'API_KEY_INVALID') ||
+                            (data.error?.code === 403)) {
+                            throw new Error("Invalid API key");
+                        }
+
+                        let event;
                         if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
                             event = parseResponseOpenAI(data);
                         } else if (model === "gemini") {
@@ -69,18 +81,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                         });
                     })
                     .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
                         chrome.scripting.insertCSS({
                             target: { tabId: tab.id },
                             css: 'body { cursor: default; }'
                         });
-
-                        if (error.code === 'invalid_api_key') {
+                        if (error.message === "Invalid API key") {
                             chrome.notifications.create({
                                 type: 'basic',
                                 iconUrl: '/icons/64.png',
                                 title: 'AI Event Scheduler',
-                                message: "Your API key is invalid. Please update it in the extension options.",
+                                message: "Invalid API key. Please set a valid API key in the extension options.",
                                 priority: 1
                             });
                             chrome.runtime.openOptionsPage();

@@ -12,7 +12,8 @@
     "storage",
     "tabs",
     "contextMenus",
-    "scripting"
+    "scripting",
+    "notifications"
   ],
   "host_permissions": [
     "http://*/",
