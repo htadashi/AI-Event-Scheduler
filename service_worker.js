@@ -74,7 +74,25 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             target: { tabId: tab.id },
                             css: 'body { cursor: default; }'
                         });
-                        alert('An error occurred while creating the event. Please try again later.');
+
+                        if (error.code === 'invalid_api_key') {
+                            chrome.notifications.create({
+                                type: 'basic',
+                                iconUrl: '/icons/64.png',
+                                title: 'AI Event Scheduler',
+                                message: "Your API key is invalid. Please update it in the extension options.",
+                                priority: 1
+                            });
+                            chrome.runtime.openOptionsPage();
+                        } else {
+                            chrome.notifications.create({
+                                type: 'basic',
+                                iconUrl: '/icons/64.png',
+                                title: 'AI Event Scheduler',
+                                message: "An error occurred while creating the event. Please try again later.",
+                                priority: 1
+                            });
+                        }
                     });
             }
         });
