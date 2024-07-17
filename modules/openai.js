@@ -1,6 +1,6 @@
 export function buildRequestOpenAI(selectionText, apiKey, model, GET_EVENT_PARAMETERS) {
     const endpoint = "https://api.openai.com/v1/chat/completions";
-    const prompt = `Create an event for ${selectionText}`;
+    const prompt = `Create an event for ${selectionText}. Consider that the current date is ${new Date().toISOString()}.`;
     const message = { role: "user", content: prompt };
     const tools = [
         {

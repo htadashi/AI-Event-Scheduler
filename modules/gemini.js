@@ -1,6 +1,6 @@
 export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-    const prompt = `Create an event for ${selectionText}`;
+    const prompt = `Create an event for ${selectionText}. Consider that the current date is ${new Date().toISOString()}.`;
     const contents = {
         role: "user",
         parts: {
