@@ -14,11 +14,13 @@
     "tabs",
     "contextMenus",
     "scripting",
-    "notifications"
+    "notifications",
+    "downloads"
   ],
   "options_page": "options.html",
   "action": {
-    "default_title": "AI Event Scheduler"
+    "default_title": "AI Event Scheduler",
+    "default_popup": "popup.html"
   },
   "icons": {
     "16": "icons/16.png",

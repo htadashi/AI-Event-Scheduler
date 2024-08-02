@@ -1,23 +1,26 @@
-export function buildRequestOpenAI(selectionText, apiKey, model, GET_EVENT_PARAMETERS) {
-    const endpoint = "https://api.openai.com/v1/chat/completions";
-    const prompt = `Create an event for ${selectionText}. Consider that the current date is ${new Date().toISOString()}.`;
-    const message = { role: "user", content: prompt };
-    const tools = [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_event_information",
-                "description": "Get the event information from the input text.",
-                "parameters": {
-                    "type": "object",
-                    "properties": GET_EVENT_PARAMETERS,
-                    "required": ["title", "start_date", "location", "description"]
-                }
-            }
-        }
-    ];
-    const tool_choice = { "type": "function", "function": { "name": "get_event_information" } };
+export function buildRequestOpenAI(request_params, apiKey, model) {
 
+    console.log(request_params);
+
+    const prompt = request_params.prompt;
+    let tools = [];
+    for (const func of request_params.functions) {
+        tools.push({
+            "type": "function",
+            "function": func
+        });
+    }
+
+    console.log(request_params.functions.length);
+
+    let tool_choice;
+    if (request_params.functions.length === 1) {
+        tool_choice = { "type": "function", "function": { "name": request_params.functions[0].name } };
+    } else {
+        tool_choice = "required";
+    }
+
+    const message = { role: "user", content: prompt };
     const request_body = JSON.stringify({
         model: model,
         messages: [message],
@@ -25,7 +28,7 @@ export function buildRequestOpenAI(selectionText, apiKey, model, GET_EVENT_PARAM
         tool_choice: tool_choice
     });
     const request = {
-        endpoint: endpoint,
+        endpoint: "https://api.openai.com/v1/chat/completions",
         options: {
             method: "POST",
             headers: {
@@ -40,6 +43,11 @@ export function buildRequestOpenAI(selectionText, apiKey, model, GET_EVENT_PARAM
 }
 
 export function parseResponseOpenAI(data) {
-    const event = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
-    return event;
+
+    const parsedResponse = {
+        function_used: data.choices[0].message.tool_calls[0].function.name,
+        event: JSON.parse(data.choices[0].message.tool_calls[0].function.arguments)
+    }
+
+    return parsedResponse;
 }

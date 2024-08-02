@@ -1,6 +1,6 @@
-export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-    const prompt = `Create an event for ${selectionText}. Consider that the current date is ${new Date().toISOString()}.`;
+export function buildRequestGemini(request_params, apiKey) {
+
+    const prompt = request_params.prompt;
     const contents = {
         role: "user",
         parts: {
@@ -9,21 +9,19 @@ export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) 
     };
     const tools = [
         {
-            "function_declarations": {
-                "name": "get_event_information",
-                "description": "Get the event information from the input text.",
-                "parameters": {
-                    "type": "object",
-                    "properties": GET_EVENT_PARAMETERS,
-                    "required": ["title", "start_date", "location", "description"]
-                }
-            }
+            "function_declarations": request_params.functions
         }
     ];
+
+    let allowed_function_names = [];
+    for (const func of request_params.functions) {
+        allowed_function_names.push(func.name);
+    }
+
     const tool_config = {
         "function_calling_config": {
             "mode": "ANY",
-            "allowed_function_names": ["get_event_information"]
+            "allowed_function_names": allowed_function_names
         }
     };
 
@@ -33,7 +31,7 @@ export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) 
         tool_config: tool_config
     });
     const request = {
-        endpoint: endpoint,
+        endpoint: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
         options: {
             method: "POST",
             headers: {
@@ -47,6 +45,11 @@ export function buildRequestGemini(selectionText, apiKey, GET_EVENT_PARAMETERS) 
 }
 
 export function parseResponseGemini(data) {
-    const event = data.candidates[0].content.parts[0].functionCall.args;
-    return event;
+
+    const parsedResponse = {
+        function_used: data.candidates[0].content.parts[0].functionCall.name,
+        event: JSON.parse(data.candidates[0].content.parts[0].functionCall.args)
+    }
+
+    return parsedResponse;
 }

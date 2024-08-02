@@ -1,11 +1,8 @@
 import { buildRequestOpenAI, parseResponseOpenAI } from "./modules/openai.js";
 import { buildRequestGemini, parseResponseGemini } from "./modules/gemini.js";
-import { GET_EVENT_PARAMETERS } from "./modules/prompts.js";
+import { GCalLink, iCalDownload, autoSelect } from "./modules/prompts.js";
 
 import { isAllDayEvent } from "./modules/util.js";
-chrome.action.onClicked.addListener(() => {
-    chrome.runtime.openOptionsPage();
-});
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
@@ -17,7 +14,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId == "create-gcal-url") {
-        chrome.storage.sync.get(["apiKey", "defaultModel"], function (result) {
+        chrome.storage.sync.get(["apiKey", "defaultModel", "selectedMode"], function (result) {
             chrome.scripting.insertCSS({
                 target: { tabId: tab.id },
                 css: 'body { cursor: wait; }'
@@ -33,15 +30,28 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 chrome.runtime.openOptionsPage();
             } else {
                 const apiKey = result.apiKey;
-                const selectedText = info.selectionText;
+                let selectedMode = result.selectedMode;
                 let model = result.defaultModel;
                 if (model === undefined) model = "gpt-3.5-turbo";
+                if (selectedMode === undefined) selectedMode = "newTab";
+
+                const selectedText = info.selectionText;
+                let request_params;
+                if (selectedMode === "newTab") {
+                    request_params = GCalLink(selectedText);
+                } else if (selectedMode === "ical") {
+                    request_params = iCalDownload(selectedText);
+                } else if (selectedMode === "auto") {
+                    request_params = autoSelect(selectedText);
+                }
+
+                console.log(request_params);
 
                 let request;
                 if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
-                    request = buildRequestOpenAI(selectedText, apiKey, model, GET_EVENT_PARAMETERS);
+                    request = buildRequestOpenAI(request_params, apiKey, model);
                 } else if (model === "gemini") {
-                    request = buildRequestGemini(selectedText, apiKey, GET_EVENT_PARAMETERS);
+                    request = buildRequestGemini(request_params, apiKey);
                 }
 
                 fetch(request.endpoint, request.options)
@@ -54,43 +64,55 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             throw new Error("Invalid API key");
                         }
 
-                        let event;
+                        let parsedResponse;
                         if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
-                            event = parseResponseOpenAI(data);
+                            parsedResponse = parseResponseOpenAI(data);
                         } else if (model === "gemini") {
-                            event = parseResponseGemini(data);
+                            parsedResponse = parseResponseGemini(data);
                         }
+                        const { function_used, event } = parsedResponse;
 
                         console.log(event);
-                        // Format the dates
-                        const startDate = event.start_date;
-                        // For untimed events the end date is exclusive, so the end date should be the next day.
-                        let endDate = event.end_date;
-                        if (isAllDayEvent(endDate)) {
-                            endDate = new Date(endDate.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
-                            endDate.setDate(endDate.getDate() + 1);
-                            endDate = endDate.toISOString().split('T')[0].replace(/-/g, '');
-                            event.end_date = endDate;
-                        } else if (!endDate) {
-                            endDate = startDate;
+
+                        if (function_used === "get_event_information") {
+                            // Format the dates
+                            const startDate = event.start_date;
+                            // For untimed events the end date is exclusive, so the end date should be the next day.
+                            let endDate = event.end_date;
+                            if (isAllDayEvent(endDate)) {
+                                endDate = new Date(endDate.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+                                endDate.setDate(endDate.getDate() + 1);
+                                endDate = endDate.toISOString().split('T')[0].replace(/-/g, '');
+                                event.end_date = endDate;
+                            } else if (!endDate) {
+                                endDate = startDate;
+                            }
+
+                            // URL encode the event details
+                            const title = encodeURIComponent(event.title);
+                            const location = encodeURIComponent(event.location);
+                            const description = encodeURIComponent(event.description);
+
+                            // Construct the Google Calendar URL and open a new tab
+                            const calendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${description}&location=${location}`;
+                            chrome.tabs.create({
+                                url: calendarURL
+                            });
+                        } else if (function_used === "generate_ical_file") {
+                            const icsFile = event.ical;
+                            chrome.downloads.download({
+                                url: `data:text/calendar,${encodeURIComponent(icsFile)}`,
+                                filename: event.filename,
+                                saveAs: true
+                            });
                         }
 
-                        // URL encode the event details
-                        const title = encodeURIComponent(event.title);
-                        const location = encodeURIComponent(event.location);
-                        const description = encodeURIComponent(event.description);
-
-                        // Construct the Google Calendar URL
-                        const calendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${description}&location=${location}`;
-
-                        // Inserts a CSS rule to set the cursor back to default and opens a new tab with the generated Google Calendar URL
+                        // CSS rule to set the cursor back to default 
                         chrome.scripting.insertCSS({
                             target: { tabId: tab.id },
                             css: 'body { cursor: default; }'
                         });
-                        chrome.tabs.create({
-                            url: calendarURL
-                        });
+
                     })
                     .catch(error => {
                         chrome.scripting.insertCSS({
@@ -107,6 +129,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             });
                             chrome.runtime.openOptionsPage();
                         } else {
+                            console.log(error);
                             chrome.notifications.create({
                                 type: 'basic',
                                 iconUrl: '/icons/64.png',

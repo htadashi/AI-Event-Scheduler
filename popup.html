@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Event Scheduler</title>
+  <link rel="stylesheet" href="style/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+      white-space: nowrap;
+    }
+    .btn-small {
+      width: 42px;
+      height: 32px;
+      background-color: white;
+    }
+    .btn-small i {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      color: black;
+    }
+    .btn-small.active {
+      background-color: #26a69a;
+    }
+    #modeText {
+      margin-top: 10px;
+      font-size: 14px;       
+    }
+    #optionsButton {
+      text-transform: none;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>  
+  <div class="container">
+    <div id="modeText"><b>Mode</b>: new tab</div>
+    <div class="row">
+      <div class="button-container">
+        <button id="newTabButton" class="btn-small waves-effect waves-light active">
+          <i class="tiny material-icons">tab</i>
+        <button id="icalButton" class="btn-small waves-effect waves-light">
+          <i class="tiny material-icons">event</i>
+        </button>
+        <button id="autoButton" class="btn-small waves-effect waves-light">
+          <i class="tiny material-icons">brightness_auto</i>
+        </button>
+      </div>        
+    </div>
+    <div class="row">
+      <button id="optionsButton" class="btn waves-effect waves-light black">⚙ Settings</button>
+    </div>
+  </div>
+
+  <script src="style/materialize.min.js"></script>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
