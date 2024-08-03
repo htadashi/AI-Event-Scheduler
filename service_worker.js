@@ -7,6 +7,7 @@ import { isAllDayEvent } from "./modules/util.js";
 
 const modelHandlers = {
     "gpt-3.5-turbo": { build: buildRequestOpenAI, parse: parseResponseOpenAI },
+    "gpt-4o-mini": { build: buildRequestOpenAI, parse: parseResponseOpenAI },
     "gpt-4o": { build: buildRequestOpenAI, parse: parseResponseOpenAI },
     "gemini-pro": { build: buildRequestGemini, parse: parseResponseGemini },
     "gemini-1.5-flash-latest": { build: buildRequestGemini, parse: parseResponseGemini },
