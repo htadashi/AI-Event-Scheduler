@@ -1,4 +1,4 @@
-export function buildRequestGemini(request_params, apiKey) {
+export function buildRequestGemini(request_params, apiKey, model) {
 
     const prompt = request_params.prompt;
     const contents = {
@@ -31,7 +31,7 @@ export function buildRequestGemini(request_params, apiKey) {
         tool_config: tool_config
     });
     const request = {
-        endpoint: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+        endpoint: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         options: {
             method: "POST",
             headers: {
@@ -48,7 +48,7 @@ export function parseResponseGemini(data) {
 
     const parsedResponse = {
         function_used: data.candidates[0].content.parts[0].functionCall.name,
-        event: JSON.parse(data.candidates[0].content.parts[0].functionCall.args)
+        event: data.candidates[0].content.parts[0].functionCall.args
     }
 
     return parsedResponse;

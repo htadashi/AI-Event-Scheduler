@@ -1,7 +1,5 @@
 export function buildRequestOpenAI(request_params, apiKey, model) {
 
-    console.log(request_params);
-
     const prompt = request_params.prompt;
     let tools = [];
     for (const func of request_params.functions) {
@@ -10,8 +8,6 @@ export function buildRequestOpenAI(request_params, apiKey, model) {
             "function": func
         });
     }
-
-    console.log(request_params.functions.length);
 
     let tool_choice;
     if (request_params.functions.length === 1) {

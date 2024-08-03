@@ -4,6 +4,30 @@ import { GCalLink, iCalDownload, autoSelect } from "./modules/prompts.js";
 
 import { isAllDayEvent } from "./modules/util.js";
 
+
+const modelHandlers = {
+    "gpt-3.5-turbo": { build: buildRequestOpenAI, parse: parseResponseOpenAI },
+    "gpt-4o": { build: buildRequestOpenAI, parse: parseResponseOpenAI },
+    "gemini-pro": { build: buildRequestGemini, parse: parseResponseGemini },
+    "gemini-1.5-flash-latest": { build: buildRequestGemini, parse: parseResponseGemini },
+};
+
+function buildRequest(request_params, apiKey, model) {
+    const handler = modelHandlers[model];
+    if (handler) {
+        return handler.build(request_params, apiKey, model);
+    }
+    throw new Error(`Unsupported model: ${model}`);
+}
+
+function parseResponse(data, model) {
+    const handler = modelHandlers[model];
+    if (handler) {
+        return handler.parse(data);
+    }
+    throw new Error(`Unsupported model: ${model}`);
+}
+
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "create-gcal-url",
@@ -45,15 +69,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                     request_params = autoSelect(selectedText);
                 }
 
-                console.log(request_params);
-
-                let request;
-                if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
-                    request = buildRequestOpenAI(request_params, apiKey, model);
-                } else if (model === "gemini") {
-                    request = buildRequestGemini(request_params, apiKey);
-                }
-
+                const request = buildRequest(request_params, apiKey, model);
                 fetch(request.endpoint, request.options)
                     .then(response => response.json())
                     .then(data => {
@@ -64,15 +80,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             throw new Error("Invalid API key");
                         }
 
-                        let parsedResponse;
-                        if (model === "gpt-3.5-turbo" || model === "gpt-4o") {
-                            parsedResponse = parseResponseOpenAI(data);
-                        } else if (model === "gemini") {
-                            parsedResponse = parseResponseGemini(data);
-                        }
+                        const parsedResponse = parseResponse(data, model);
                         const { function_used, event } = parsedResponse;
-
-                        console.log(event);
 
                         if (function_used === "get_event_information") {
                             // Format the dates
