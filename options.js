@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
     const elems = document.querySelectorAll('select');
     M.FormSelect.init(elems);
+
+    // Retrieve the previously selected model from storage and set it as the active option if it exists
+    chrome.storage.sync.get('defaultModel', function (data) {
+        if (data.defaultModel) {
+            const modelSelect = document.getElementById('model-select');
+            modelSelect.value = data.defaultModel;
+            M.FormSelect.init(modelSelect);
+        }
+    });
 });
 
 document.getElementById("configuration-form").addEventListener("submit", function (event) {
