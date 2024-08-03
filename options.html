@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Event Scheduler Options</title>
     <link rel="stylesheet" href="style/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        .container {
+            margin-top: 10px;
+        }
         #saveButton {
             text-transform: none;
         }
@@ -14,19 +18,29 @@
 <body>
     <nav>
       <div class="nav-wrapper black">
-          <a href="#" class="brand-logo center">📅 AI Event Scheduler Options</a>
+          <a class="brand-logo center">⚙ Settings</a>
       </div>
-  </nav>  
+    </nav>  
     <div class="container">
-
+        <div class="valign-wrapper">
+            <i class="small material-icons">help</i>
+            <span style="font-size: 18px;"><b>Instructions</b>:</span>
+        </div>
+        <ul class="collection">
         <div class="row">
-            <div class="col s12" style="font-size: 12px;"><br>
-                <p class="flow-text">To use AI Event Scheduler, you will need an API key for the selected model.</p>
-                <p class="flow-text"> • For obtaining the API key for OpenAI models, see <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key" target="_blank">these instructions</a>.</p>
-                <p class="flow-text"> • For obtaining the API key for Gemini, see <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank">these instructions</a>.</p>
+            <div class="col s12"><br>
+                <p class="flow-text" style="font-size: 15px;">To use AI Event Scheduler, you will need an API key for the selected model.</p>
+                <p class="flow-text" style="font-size: 15px;"> • For obtaining the API key for OpenAI models, see <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key" target="_blank">these instructions</a>.</p>
+                <p class="flow-text" style="font-size: 15px;"> • For obtaining the API key for Gemini models, see <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank">these instructions</a>.</p>
             </div>
         </div>
+        </ul>
 
+        <div class="valign-wrapper">
+            <i class="small material-icons">memory</i>
+            <span style="font-size: 18px;"><b>AI Model</b>:</span>
+        </div>        
+        <ul class="collection">
         <form id="configuration-form">
             <div class="row">
                 <div class="blue-select input-field col s12">
@@ -50,6 +64,7 @@
                 </div>
             </div>
         </form>
+        </ul>
     </div>
 
     <script src="style/materialize.min.js"></script>
