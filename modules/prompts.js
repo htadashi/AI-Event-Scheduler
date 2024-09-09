@@ -10,11 +10,11 @@ const get_event_information_function = {
             },
             "start_date": {
                 "type": "string",
-                "description": "The start date of the event. If it is an all-day event, use the format YYYYMMDD. Otherwise, use the format YYYYMMDDTHHMMSSZ."
+                "description": "The start date and time of the event. If it is an all-day event, use the format YYYYMMDD. Otherwise, use the format YYYYMMDDTHHMMSSZ."
             },
             "end_date": {
                 "type": "string",
-                "description": "The end date of the event if it exists. If it is an all-day event, use the format YYYYMMDD. Otherwise, use the format YYYYMMDDTHHMMSSZ."
+                "description": "The end date and time of the event if it exists. If it is an all-day event, use the format YYYYMMDD. Otherwise, use the format YYYYMMDDTHHMMSSZ."
             },
             "location": {
                 "type": "string",
@@ -52,7 +52,9 @@ const generate_ical_file_function = {
 export function GCalLink(selectionText) {
 
     const params = {
-        prompt: `Assuming today's date is ${new Date().toISOString()}, extract the event information of this text: ${selectionText}`,
+        prompt: `Assume today's date is ${new Date().toISOString()}.
+        Assume the desired timezone is ${Intl.DateTimeFormat().resolvedOptions().timeZone}.
+        Extract the event information of this text and convert it from desired timezone to UTC: ${selectionText}`,
         functions: [get_event_information_function]
     }
 
@@ -62,7 +64,9 @@ export function GCalLink(selectionText) {
 export function iCalDownload(selectionText) {
 
     const params = {
-        prompt: `Assuming today's date is ${new Date().toISOString()}, generate an .ical file based on the events listed in the following text: ${selectionText}.`,
+        prompt: `Assume today's date is ${new Date().toISOString()}.
+        Assume the desired timezone is ${Intl.DateTimeFormat().resolvedOptions().timeZone}.
+        Generate an .ical file based on the events listed in the following text, and convert it from desired timezone to UTC: ${selectionText}.`,
         functions: [generate_ical_file_function]
     }
 
@@ -73,6 +77,7 @@ export function autoSelect(selectionText) {
 
     const params = {
         prompt: `Assume today's date is ${new Date().toISOString()}. 
+        Assume the the desired timezone is ${Intl.DateTimeFormat().resolvedOptions().timeZone}
         Analyze the following text: ${selectionText} 
 
         Does it contain a single date or more than one date?
