@@ -101,7 +101,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             // URL encode the event details
                             const title = encodeURIComponent(event.title);
                             const location = encodeURIComponent(event.location);
-                            const description = encodeURIComponent(event.description);
+                            const description = `${encodeURIComponent(event.description)}
+                            <br/><br/><br/>
+                            <a href="${encodeURIComponent(info.pageUrl)}">Created from this web page</a>
+                            `;
+
 
                             // Construct the Google Calendar URL and open a new tab
                             const calendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${description}&location=${location}`;
