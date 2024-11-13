@@ -1,6 +1,6 @@
 const get_event_information_function = {
     "name": "get_event_information",
-    "description": "Get the event information from the input text.",
+    "description": "Get the event information from the input text, including recurring event details.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -23,6 +23,42 @@ const get_event_information_function = {
             "description": {
                 "type": "string",
                 "description": "The description of the event. Maximum number of characters is 800."
+            },
+            "recurrence": {
+                "type": "object",
+                "description": "Information about the recurring nature of the event.",
+                "properties": {
+                    "frequency": {
+                        "type": "string",
+                        "description": "The frequency of the event (e.g., 'weekly', 'daily', 'monthly')."
+                    },
+                    "interval": {
+                        "type": "integer",
+                        "description": "The interval of the recurrence (e.g., 1 for every week, 2 for every other week)."
+                    },
+                    "days": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "The days of the week the event occurs on (e.g., ['TU'] for Tuesday, ['MO', 'WE', 'FR'] for Monday, Wednesday, Friday)."
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "description": "The start date of the recurrence in YYYYMMDD format."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "The end date of the recurrence in YYYYMMDD format."
+                    },
+                    "exceptions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Dates to be excluded from the recurrence in YYYYMMDD format."
+                    }
+                }
             }
         },
         "required": ["title", "start_date", "location", "description"]

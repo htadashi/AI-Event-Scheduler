@@ -85,6 +85,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                         const { function_used, event } = parsedResponse;
 
                         if (function_used === "get_event_information") {
+                            console.log("get_event_information", event)
                             // Format the dates
                             const startDate = event.start_date;
                             // For untimed events the end date is exclusive, so the end date should be the next day.
@@ -103,8 +104,33 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                             const location = encodeURIComponent(event.location);
                             const description = encodeURIComponent(event.description);
 
-                            // Construct the Google Calendar URL and open a new tab
-                            const calendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${description}&location=${location}`;
+                            // Construct the Google Calendar URL with recurring event information
+                            let calendarURL = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${description}&location=${location}`;
+
+                            // Add recurrence information if available
+                            if (event.recurrence) {
+                                const recur = event.recurrence;
+                                let recurrence = [];
+
+                                if (recur.frequency) recurrence.push(`FREQ=${recur.frequency.toUpperCase()}`);
+                                if (recur.interval) recurrence.push(`INTERVAL=${recur.interval}`);
+                                if (recur.days && recur.days.length > 0) recurrence.push(`BYDAY=${recur.days.join(',')}`);
+                                if (recur.end_date) recurrence.push(`UNTIL=${recur.end_date.replace(/[-]/g, '')}`);
+
+                                if (recurrence.length > 0) {
+                                    const rrule = `RRULE:${recurrence.join(';')}`;
+                                    calendarURL += `&recur=${encodeURIComponent(rrule)}`;
+                                }
+
+                                // Add exceptions if any
+                                if (recur.exceptions && recur.exceptions.length > 0) {
+                                    const exdates = recur.exceptions.map(date => date.replace(/[-]/g, '')).join(',');
+                                    calendarURL += `&recurrence=EXDATE:${exdates}`;
+                                }
+                            }
+
+                            console.log("Calendar URL:", calendarURL);
+
                             chrome.tabs.create({
                                 url: calendarURL
                             });
